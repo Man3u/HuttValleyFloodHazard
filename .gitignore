@@ -1,0 +1,5 @@
+data/dem_1m_raw/
+outputs/*.tif
+.DS_Store
+__pycache__/
+*.pyc
