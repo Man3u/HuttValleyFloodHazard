@@ -5,7 +5,14 @@ Wellington Region, New Zealand) — New Zealand's most densely populated floodpl
 open LiDAR, using a HAND (Height Above Nearest Drainage) pipeline, and validated against the
 real Hutt River / Te Awa Kairangi.
 
-![Flood hazard map](maps/hutt_valley_flood_hazard_map.png)
+![Flood hazard map](maps/hutt_valley_flood_hazard_map_qgis_final.png)
+
+Cartography built in QGIS Desktop (real hillshade + paletted raster renderers, print layout,
+legend, scale bar, north arrow) over an OpenStreetMap basemap — see
+[scripts/step5_qgis_cartography.py](scripts/step5_qgis_cartography.py) for the PyQGIS build
+script and `hutt_valley_flood_hazard.qgz` for the editable project. A second version built with
+Python/matplotlib (no QGIS dependency, used during automated pipeline development) is at
+[maps/hutt_valley_flood_hazard_map.png](maps/hutt_valley_flood_hazard_map.png).
 
 ## Result
 

@@ -114,11 +114,20 @@ starting point in HAND-based hazard literature — not a locally calibrated regu
 
 ## 5. Cartographic output
 
-`maps/hutt_valley_flood_hazard_map.png` — hillshade base, hazard zone overlay, the real river
-centerline for visual cross-reference, legend, north arrow, scale bar, and a caption stating
-the data source, method, and validation result directly on the map. Built with Python
-(rasterio + matplotlib) rather than a QGIS export, since this environment has no QGIS
-installed — stated plainly rather than implied otherwise.
+Two versions were produced, both from the same underlying `flood_hazard_zones_5m.tif`:
+
+- **`maps/hutt_valley_flood_hazard_map_qgis_final.png`** (primary) — built in real QGIS
+  Desktop, run by hand on the project owner's own machine (this pipeline's automated
+  environment has no QGIS installed and no root access to add it, so QGIS steps could not run
+  automatically). Uses QGIS's own hillshade and paletted-raster renderers, a print layout with
+  legend/scale bar/north arrow, and an OpenStreetMap basemap for geographic context. Build
+  script: `scripts/step5_qgis_cartography.py`; editable project: `hutt_valley_flood_hazard.qgz`.
+  One real bug was hit and fixed while building this: `QgsLayoutManager.addLayout()` requires a
+  `QgsPrintLayout`, not the more general `QgsLayout` object initially used — caught from QGIS's
+  own `TypeError`, not anticipated in advance.
+- **`maps/hutt_valley_flood_hazard_map.png`** — built with Python (rasterio + matplotlib) as
+  part of the automated pipeline, no QGIS dependency. Same hazard classification, hillshade,
+  river overlay, legend, scale bar, north arrow, and source caption.
 
 ## 6. Limitations — stated explicitly
 
