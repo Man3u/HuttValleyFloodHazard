@@ -29,7 +29,64 @@ step1_mosaic_dem.py                -> outputs/hutt_dem_1m_mosaic.tif
 step2_hydrology.py                 -> outputs/{hutt_dem_5m,flow_accum_5m,stream_mask_5m,hand_5m}.tif
 step3_validate_stream_network.py   -> validation stats (console)
 step4_hazard_classification_and_map.py -> outputs/flood_hazard_zones_5m.tif, maps/*.png
+step5_qgis_cartography.py          -> maps/*_qgis.png/.pdf, hutt_valley_flood_hazard.qgz (run in QGIS)
+fetch_live_conditions.py           -> data/live_conditions/ (live gauge monitor, see below)
 ```
+
+## Live conditions monitor (agentic extension)
+
+`scripts/fetch_live_conditions.py` extends the static hazard map into a lightweight monitoring
+loop. It pulls live readings from two real, public, no-auth Hutt River gauges on GWRC's
+[Hilltop Server](https://hilltop.gw.govt.nz/Data.hts/?Service=Hilltop&Request=SiteList) hydrology
+service:
+
+- **Hutt River at Birchville** — true volumetric flow (m3/sec), mid-valley.
+- **Hutt River at Kaitoke** — water level (mm), upper catchment. This is stage, not flow —
+  labelled honestly as such rather than implied to be the same kind of measurement.
+
+Each run fetches a configurable lookback window (default 30 days), computes a 95th-percentile
+watch threshold **from that gauge's own recent data** (not an arbitrary hardcoded number),
+compares the latest reading against it, and appends a row to
+`data/live_conditions/live_conditions_log.csv` plus a `latest_status.json` snapshot.
+
+Run it:
+```
+python3 scripts/fetch_live_conditions.py
+```
+
+**This is a human-in-the-loop design, deliberately.** The script only flags "this reading is
+unusually high compared to recent history" — it does not decide on its own what that means or
+issue public alerts. When a run flags WATCH, share `latest_status.json` and I'll reason over it
+against the validated hazard-zone map and write an honest, current assessment.
+
+To run this on a real schedule rather than by hand, add it to your Mac's own scheduler
+(`launchd`, since macOS deprecates plain cron for background jobs):
+
+```bash
+# ~/Library/LaunchAgents/com.huttvalley.livewatch.plist
+cat > ~/Library/LaunchAgents/com.huttvalley.livewatch.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.huttvalley.livewatch</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/bin/python3</string>
+    <string>/Users/manu/Desktop/HuttValleyFloodHazard/scripts/fetch_live_conditions.py</string>
+  </array>
+  <key>StartInterval</key><integer>10800</integer> <!-- every 3 hours -->
+  <key>StandardOutPath</key><string>/Users/manu/Desktop/HuttValleyFloodHazard/data/live_conditions/run.log</string>
+  <key>StandardErrorPath</key><string>/Users/manu/Desktop/HuttValleyFloodHazard/data/live_conditions/run.err.log</string>
+</dict>
+</plist>
+EOF
+launchctl load ~/Library/LaunchAgents/com.huttvalley.livewatch.plist
+```
+
+To stop it: `launchctl unload ~/Library/LaunchAgents/com.huttvalley.livewatch.plist`. A simpler
+(if less power-efficient) alternative is a plain crontab entry: `0 */3 * * * /usr/bin/python3
+/Users/manu/Desktop/HuttValleyFloodHazard/scripts/fetch_live_conditions.py`.
 
 ## Data sources
 

@@ -129,7 +129,39 @@ Two versions were produced, both from the same underlying `flood_hazard_zones_5m
   part of the automated pipeline, no QGIS dependency. Same hazard classification, hillshade,
   river overlay, legend, scale bar, north arrow, and source caption.
 
-## 6. Limitations — stated explicitly
+## 6. Live conditions monitor — agentic extension
+
+The static hazard map answers "where is exposure high, in general terrain terms." It says
+nothing about *right now*. `scripts/fetch_live_conditions.py` closes that gap with a small,
+disclosed automation + AI-agent loop, extending the project beyond a one-time analysis:
+
+- **Data layer**: GWRC runs a public Hilltop Server hydrology API
+  (`hilltop.gw.govt.nz/Data.hts`) with no authentication required. It has no documented public
+  API page — the endpoint and exact query parameters were found by opening GWRC's own live
+  dashboard (`graphs.gw.govt.nz`) in a browser and inspecting the network requests it actually
+  makes, then verifying those requests directly. One real integration bug was caught this way:
+  the server requires site names to be percent-encoded as `%20`; an HTTP client that encodes
+  spaces as `+` (a common default) gets a silent "no data" response, not an error that points
+  at the real cause.
+- **Two gauges, two different real signals, not conflated**: Hutt River at Birchville reports
+  true volumetric flow (m3/sec); Hutt River at Kaitoke's only live recorder is water level
+  (mm), not flow — used as an upstream leading indicator, and labelled as stage rather than
+  implied to be comparable to Birchville's flow reading.
+- **Threshold**: the 95th percentile of each gauge's own fetched lookback window (default 30
+  days) — the same "derive it, don't invent it" discipline as the stream-extraction threshold
+  in Section 2, rather than a hardcoded flood-warning number this project has no authority to
+  set.
+- **Automation**: intended to run on a real schedule via the user's own `launchd`/cron (see
+  README.md) rather than only on demand.
+- **AI agent layer, human-in-the-loop by design**: the script only flags a reading as
+  statistically unusual versus recent history. It does not decide on its own what that means or
+  issue any alert. When a run flags WATCH, the resulting `latest_status.json` is handed to an
+  AI agent (in practice, an interactive Claude session) to reason over against the validated
+  hazard-zone map and produce a written assessment — a deliberate choice, not a shortcut: an
+  unsupervised system making public flood-safety calls on its own would be the wrong design,
+  not just an unfinished one.
+
+## 7. Limitations — stated explicitly
 
 - **This is a relative hazard proxy, not a hydraulic flood model.** HAND reflects terrain
   shape only. It has no rainfall, no discharge, no return-period input, and does not represent
@@ -147,7 +179,7 @@ Two versions were produced, both from the same underlying `flood_hazard_zones_5m
   hydraulic models (e.g. HEC-RAS) with real rainfall/discharge data — this project is a
   terrain-analysis exercise, not a substitute for that.
 
-## 7. Reproducing this
+## 8. Reproducing this
 
 ```
 python3 scripts/download_hutt_dem.py              # run locally — writes data/dem_1m_raw/
@@ -156,6 +188,8 @@ python3 scripts/step1_mosaic_dem.py
 python3 scripts/step2_hydrology.py
 python3 scripts/step3_validate_stream_network.py
 python3 scripts/step4_hazard_classification_and_map.py
+python3 scripts/step5_qgis_cartography.py          # run inside QGIS's own Python console
+python3 scripts/fetch_live_conditions.py           # live gauge monitor, run locally/scheduled
 ```
 
 Large intermediate rasters (`outputs/*.tif`, `data/dem_1m_raw/`) are excluded from git via

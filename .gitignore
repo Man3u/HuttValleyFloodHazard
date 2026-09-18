@@ -1,5 +1,7 @@
 data/dem_1m_raw/
 outputs/*.tif
+data/live_conditions/run.log
+data/live_conditions/run.err.log
 .DS_Store
 __pycache__/
 *.pyc
