@@ -1,0 +1,41 @@
+{
+  "generated_at": "2026-09-18T12:01:40",
+  "gauges": [
+    {
+      "site": "Hutt River at Birchville",
+      "measurement": "Flow",
+      "kind": "flow",
+      "note": "Mid-valley volumetric flow -- the primary signal.",
+      "fetched_at": "2026-09-18T12:01:28",
+      "ok": true,
+      "units": "m&#179;/sec",
+      "n_readings": 8640,
+      "lookback_days": 30,
+      "latest_timestamp": "2026-09-18T12:00:00",
+      "latest_value": 60.469645,
+      "min": 6.891,
+      "max": 252.15206,
+      "median": 13.369364,
+      "watch_threshold_p95": 78.126,
+      "status": "NORMAL"
+    },
+    {
+      "site": "Hutt River at Kaitoke",
+      "measurement": "Stage",
+      "kind": "stage",
+      "note": "Upper-catchment water level, not flow -- leading indicator only.",
+      "fetched_at": "2026-09-18T12:01:35",
+      "ok": true,
+      "units": "mm",
+      "n_readings": 8640,
+      "lookback_days": 30,
+      "latest_timestamp": "2026-09-18T12:00:00",
+      "latest_value": 1779.0,
+      "min": 1248.0,
+      "max": 3106.0,
+      "median": 1375.0,
+      "watch_threshold_p95": 2017.0,
+      "status": "NORMAL"
+    }
+  ]
+}

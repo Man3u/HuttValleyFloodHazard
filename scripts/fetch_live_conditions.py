@@ -45,6 +45,7 @@ setup notes in README.md.
 
 import argparse
 import csv
+import html
 import json
 import os
 import re
@@ -112,7 +113,7 @@ def parse_readings(xml_text: str):
     if err:
         raise ValueError(f"Hilltop error: {err.group(1)}")
     units_m = re.search(r"<Units>([^<]*)</Units>", xml_text)
-    units = units_m.group(1) if units_m else "unknown"
+    units = html.unescape(units_m.group(1)) if units_m else "unknown"
     rows = re.findall(r"<E><T>([^<]+)</T><I1>([^<]+)</I1>", xml_text)
     if not rows:
         raise ValueError("No <E> data rows found in response")
