@@ -1,14 +1,14 @@
 # Hutt Valley Flood Hazard Mapping
 
 DEM-derived flood hazard indicator and cartographic map for the Hutt Valley (Lower Hutt,
-Wellington Region, New Zealand) — New Zealand's most densely populated floodplain — built from
+Wellington Region, New Zealand). New Zealand's most densely populated floodplain, built from
 open LiDAR, using a HAND (Height Above Nearest Drainage) pipeline, and validated against the
 real Hutt River / Te Awa Kairangi.
 
 ![Flood hazard map](maps/hutt_valley_flood_hazard_map_qgis_final.png)
 
 Cartography built in QGIS Desktop (real hillshade + paletted raster renderers, print layout,
-legend, scale bar, north arrow) over an OpenStreetMap basemap — see
+legend, scale bar, north arrow) over an OpenStreetMap basemap. see
 [scripts/step5_qgis_cartography.py](scripts/step5_qgis_cartography.py) for the PyQGIS build
 script and `hutt_valley_flood_hazard.qgz` for the editable project. A second version built with
 Python/matplotlib (no QGIS dependency, used during automated pipeline development) is at
@@ -55,7 +55,7 @@ python3 scripts/fetch_live_conditions.py
 ```
 
 **This is a human-in-the-loop design, deliberately.** The script only flags "this reading is
-unusually high compared to recent history" — it does not decide on its own what that means or
+unusually high compared to recent history", it does not decide on its own what that means or
 issue public alerts. When a run flags WATCH, share `latest_status.json` and I'll reason over it
 against the validated hazard-zone map and write an honest, current assessment.
 
@@ -102,7 +102,7 @@ Python, `rasterio`, `pysheds` (D8 flow routing + HAND), `scipy` (validation), `m
 
 ## Important note
 
-This is a terrain-derived relative hazard **proxy**, not a calibrated hydraulic flood model —
+This is a terrain-derived relative hazard **proxy**, not a calibrated hydraulic flood model, 
 it has no rainfall or discharge input and does not represent stopbanks' actual protection
 level. See the Limitations section of [REPORT.md](REPORT.md) before using this for anything
 beyond a portfolio/demonstration purpose.
